@@ -44,6 +44,7 @@ public class BoardView {
 	
 	// Constructeur : 
 	public BoardView(int x, int y) {
+		
 		startX = x;
 		startY = y;
 		

@@ -1,11 +1,9 @@
 package chess.ui;
 
-import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import chess.ChessBoard;
-import chess.ChessUtils;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
@@ -37,8 +35,15 @@ public class PieceView {
 	// Référence à la planche de jeu. Utilisée pour déplacer la pièce.
 	private ChessBoard board;
 	
+	// Reference a BoardView 
+//	private BoardView boardView;
+	
 	// Panneau d'interface contenant l'image de la pièce
 	private Pane piecePane;
+	
+	private Point2D init;
+	private Point2D end;
+	
 	
 	
 	
@@ -66,6 +71,10 @@ public class PieceView {
 		enableDragging(piecePane);
 	}
 	
+	//Accesseurs divers
+	public Pane getPane() {
+		return piecePane;
+	}
 	
 	
 	// Methode enableDragging() : 
@@ -95,19 +104,17 @@ public class PieceView {
 		// au jeu d'échecs si possible.
 		// L'image de la pièce est également centrée sur la case la plus proche.
 		node.setOnMouseReleased(event -> {
-
-			Point newGridPos = board.paneToGrid(event.getSceneX(), event.getSceneY());
-			if (board.move(getGridPos(), newGridPos)) {
-				
-				Point2D newPos = board.gridToPane(this, newGridPos.x, newGridPos.y);
+			end = new Point2D(event.getSceneX(), event.getSceneY());
+			
+			Point2D newPos = board.move(init, end);
+			
+			if(!(newPos.equals(init))) {
 				node.relocate(newPos.getX(), newPos.getY());
-				this.setGridPos(newGridPos);
-			} 
-			else {
-				Point2D oldPos = board.gridToPane(this, getGridX(), getGridY());
-				node.relocate(oldPos.getX(), oldPos.getY());
 			}
-
+			
+			else {
+				node.relocate(newPos.getX(), newPos.getY());	
+			}
 		});
 	}
 	

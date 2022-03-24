@@ -1,32 +1,14 @@
 package chess;
 
 import java.awt.Point;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import chess.ui.PieceView;
 import javafx.scene.layout.Pane;
 
 
 
 public class ChessPiece {
-	
-	// Utilisé pour générer les noms de fichiers contenant les images des pièces.
-	private static final String names[] = { "pawn", "knight", "bishop", "rook", "queen", "king" };
-	private static final String prefixes[] = { "w", "b" };
-	
-
-	// Taille d'une pièce dans l'interface
-	private static double pieceSize = 75.0;
-
-	// Panneau d'interface contenant l'image de la pièce
-	private Pane piecePane;
 
 	// Position de la pièce sur l'échiquier
 	private int gridPosX;
@@ -34,9 +16,8 @@ public class ChessPiece {
 
 	private int type;
 	private int color;
-
-	// Référence à la planche de jeu. Utilisée pour déplacer la pièce.
-	private ChessBoard board;
+	
+	private PieceView pieceView;
 
 	// Pour créer des pièces à mettre sur les cases vides
 	public ChessPiece(int x, int y, ChessBoard b) {
@@ -44,39 +25,20 @@ public class ChessPiece {
 		this.color = ChessUtils.COLORLESS;
 		gridPosX = x;
 		gridPosY = y;
-		board = b;
+//		board = b;
 	}
 
+	
 	// Création d'une pièce normale. La position algébrique en notation d'échecs
 	// lui donne sa position sur la grille.
 	public ChessPiece(String name, String pos, ChessBoard b) {
-
 		color = ChessUtils.getColor(name);
 		type = ChessUtils.getType(name);
-
-		board = b;
-		
-		Image pieceImage;
-		try {
-			pieceImage = new Image(new FileInputStream("images/" + prefixes[color] + names[type] + ".png"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
-		}
-		ImageView pieceView = new ImageView(pieceImage);
-
-		pieceView.setX(0);
-		pieceView.setY(0);
-		pieceView.setFitHeight(pieceSize);
-		pieceView.setFitWidth(pieceSize);
-
-		pieceView.setPreserveRatio(true);
-		piecePane = new Pane(pieceView);
-		enableDragging(piecePane);
 		
 		setAlgebraicPos(pos);
-
+		pieceView = new PieceView(name, pos, b, color, type);
 	}
+	
 	
 	//Change la position avec la notation algébrique
 	public void setAlgebraicPos(String pos) {
@@ -87,46 +49,6 @@ public class ChessPiece {
 		gridPosY = pos2d.y;
 	}
 
-	// Gestionnaire d'événements pour le déplacement des pièces
-	private void enableDragging(Node node) {
-		final ObjectProperty<Point2D> mouseAnchor = new SimpleObjectProperty<>();
-
-		// Lorsque la pièce est saisie, on préserve la position de départ
-		node.setOnMousePressed(event -> {
-
-			mouseAnchor.set(new Point2D(event.getSceneX(), event.getSceneY()));
-
-		});
-
-		// À chaque événement de déplacement, on déplace la pièce et on met à
-		// jour la position de départ
-		node.setOnMouseDragged(event -> {
-			double deltaX = event.getSceneX() - mouseAnchor.get().getX();
-			double deltaY = event.getSceneY() - mouseAnchor.get().getY();
-			node.relocate(node.getLayoutX() + deltaX, node.getLayoutY() + deltaY);
-			node.toFront();
-			mouseAnchor.set(new Point2D(event.getSceneX(), event.getSceneY()));
-
-		});
-
-		// Lorsqu'on relâche la pièce, le mouvement correspondant est appliqué
-		// au jeu d'échecs si possible.
-		// L'image de la pièce est également centrée sur la case la plus proche.
-		node.setOnMouseReleased(event -> {
-
-			Point newGridPos = board.paneToGrid(event.getSceneX(), event.getSceneY());
-			if (board.move(getGridPos(), newGridPos)) {
-			
-				Point2D newPos = board.gridToPane(this, newGridPos.x, newGridPos.y);
-				node.relocate(newPos.getX(), newPos.getY());
-				this.setGridPos(newGridPos);
-			} else {
-				Point2D oldPos = board.gridToPane(this, getGridX(), getGridY());
-				node.relocate(oldPos.getX(), oldPos.getY());
-			}
-
-		});
-	}
 
 	// Crée la liste de pièces avec leur position de départ pour un jeu d'échecs standard
 	public static ArrayList<ChessPiece> createInitialPieces(ChessBoard board) {
@@ -169,8 +91,8 @@ public class ChessPiece {
 	}
 
 	//Accesseurs divers
-	public Pane getPane() {
-		return piecePane;
+	public Pane getUI() {
+		return pieceView.getPane();
 	}
 
 	public int getType() {
