@@ -119,5 +119,57 @@ public class ChessPiece {
 		gridPosX = pos.x;
 		gridPosY = pos.y;
 	}
+	
+	public static ChessPiece readFromStream(String line, ChessBoard board) {
+		String position = line.substring(0,2);
+		String color = line.substring(3,5);
+		
+		return new ChessPiece(color, position, board);
+	}
+	
+	public static String saveToStream(ChessPiece piece) {
+		String ret = 	ChessUtils.makeAlgebraicPosition(piece.gridPosX, piece.gridPosY) 
+						+ "-" 
+						+ ChessUtils.makePieceName(piece.color, piece.type) 
+						+ "\n";
+		return ret;
+	}
+	
+	
+	// Implementation de la methode equals() pour le ChessPiece.
+	@Override
+	public boolean equals(Object obj) {
+		
+		ChessPiece otherPiece = (ChessPiece)obj;
+		
+		if(this == obj) {
+			return true;
+		}
+		
+		if(obj == null) {
+			return false;
+		}
+		
+		if(getClass() != obj.getClass()) {
+			return false;
+		}	
+		
+		if(color != otherPiece.color) {
+			return false;
+		}
+		
+		if(gridPosX != otherPiece.gridPosX) {
+			return false;
+		}
+		
+		if(gridPosY != otherPiece.gridPosY) {
+			return false;
+		}
+		
+		if(type != otherPiece.type) {
+			return false;
+		}
+		return true;
+	}
 
 }

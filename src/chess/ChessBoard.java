@@ -2,6 +2,8 @@ package chess;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileWriter;
+import java.util.Scanner;
 
 import chess.ui.BoardView;
 import javafx.geometry.Point2D;
@@ -42,6 +44,7 @@ public class ChessBoard {
 		grid[x][y] = new ChessPiece(x, y, this);
 	}
 
+	
 	// Place une pièce sur le planche de jeu.
 	public void putPiece(ChessPiece piece) {
 
@@ -56,22 +59,24 @@ public class ChessBoard {
 		return boardView.getPane();
 	}
 	
-	
 
 	//Les cases vides contiennent une pièce spéciale
 	public boolean isEmpty(Point pos) {
 		return (grid[pos.x][pos.y].getType() == ChessUtils.TYPE_NONE);
 	}
 
+	
 	//Vérifie si une coordonnée dans la grille est valide
 	public boolean isValid(Point pos) {
 		return (pos.x >= 0 && pos.x <= 7 && pos.y >= 0 && pos.y <= 7);
 	}
 
+	
 	//Vérifie si les pièces à deux positions dans la grille sont de la même couleur.
 	public boolean isSameColor(Point pos1, Point pos2) {
 		return grid[pos1.x][pos1.y].getColor() == grid[pos2.x][pos2.y].getColor();
 	}
+	
 	
 	//Effectue un mouvement à partir de la notation algébrique des cases ("e2-b5" par exemple)
 	public void algebraicMove(String move){
@@ -86,10 +91,17 @@ public class ChessBoard {
 	
 	//Effectue un mouvement sur l'échiqier. Quelques règles de base sont implantées ici.
 	public boolean move(Point gridPos, Point newGridPos) {
-
+		
+		ChessPiece toMove = getPiece(gridPos);
+		
 		//Vérifie si les coordonnées sont valides
 		if (!isValid(newGridPos))
 			return false;
+		
+//		if(!toMove.verifyMove(gridPos, newGridPos)) {
+//			return false;
+//		}
+	
 
 		//Si la case destination est vide, on peut faire le mouvement
 		else if (isEmpty(newGridPos)) {
@@ -109,22 +121,10 @@ public class ChessBoard {
 
 		return false;
 	}
-	//Fonctions de lecture et de sauvegarde d'échiquier dans des fichiers. À implanter.
-	
-	public static ChessBoard readFromFile(String fileName) throws Exception {
-		return readFromFile(new File(fileName), 0, 0);
-	}
-
-	public static ChessBoard readFromFile(File file, int x, int y) throws Exception {
-		
-
-		throw new Exception("Pas implanté");
-	}
 	
 	
-	public void saveToFile(File file) throws Exception {
-
-		throw new Exception("Pas implanté");
+	private ChessPiece getPiece(Point point) {
+		return grid[point.x][point.y];
 	}
 	
 	
@@ -142,6 +142,67 @@ public class ChessBoard {
 			Point2D oldPos = boardView.gridToPane(grid[init.x][init.y], init.x, init.y);
 			return oldPos;
 		}
+	}
+	
+	
+	//Fonctions de lecture et de sauvegarde d'échiquier dans des fichiers. À implanter.
+	public static ChessBoard readFromFile(String fileName) throws Exception {
+		return readFromFile(new File(fileName), 0, 0);
+	}
+	
+	
+	// Implementation de la methode readFromFile()
+	public static ChessBoard readFromFile(File file, int x, int y) throws Exception {
+		ChessBoard initBoard = new ChessBoard(x,y);
+		Scanner scan = new Scanner(file);
+		
+		while (scan.hasNext()) {
+			ChessPiece piece = ChessPiece.readFromStream(scan.nextLine(), initBoard);
+			initBoard.putPiece(piece);
+		}
+		scan.close();
+		return initBoard;
+	}
+	
+	
+	// Implementation de la methode saveToFile()
+	public void saveToFile(File file) throws Exception {
+		FileWriter writeFile = new FileWriter(file);
+		
+		for(int i = 0; i < 8; i++) {
+			for(int j = 0; j < 8; j++) {
+				Point pos = new Point(i,j);
+				if(!isEmpty(pos)) {
+					writeFile.write(ChessPiece.saveToStream(grid[i][j]));
+				}
+			}
+		}
+		writeFile.flush();
+		writeFile.close();
+	}
+	
+	
+	// Implementation de la methode equals() pour le ChessBoard
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (obj == this) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		
+		ChessBoard otherBoard = (ChessBoard) obj;
+		
+		for(int i = 0; i < grid.length; i++) {
+			for(int j = 0; j < grid[i].length; j++) {
+				if(!grid[i][j].equals(otherBoard.grid[i][j])) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }
