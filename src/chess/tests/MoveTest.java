@@ -9,11 +9,6 @@ import chess.ChessGame;
 
 class MoveTest {
 
-	
-	
-	
-	
-	
 	// Premiere methode de test.
 	@Test
 	public void testBasicCollision() throws Exception { 

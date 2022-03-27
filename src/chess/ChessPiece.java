@@ -1,8 +1,10 @@
 package chess;
 
 import java.awt.Point;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
+import chess.ui.BoardView;
 import chess.ui.PieceView;
 import javafx.scene.layout.Pane;
 
@@ -25,10 +27,11 @@ public class ChessPiece {
 		this.color = ChessUtils.COLORLESS;
 		gridPosX = x;
 		gridPosY = y;
-//		board = b;
+		pieceView = new PieceView(x, y, b);
+		new BoardView(x,y,b);
 	}
 
-	
+
 	// Création d'une pièce normale. La position algébrique en notation d'échecs
 	// lui donne sa position sur la grille.
 	public ChessPiece(String name, String pos, ChessBoard b) {
@@ -36,7 +39,7 @@ public class ChessPiece {
 		type = ChessUtils.getType(name);
 		
 		setAlgebraicPos(pos);
-		pieceView = new PieceView(name, pos, b, color, type);
+		pieceView = new PieceView(b, this);
 	}
 	
 	
@@ -120,6 +123,7 @@ public class ChessPiece {
 		gridPosY = pos.y;
 	}
 	
+	
 	public static ChessPiece readFromStream(String line, ChessBoard board) {
 		String position = line.substring(0,2);
 		String color = line.substring(3,5);
@@ -127,12 +131,18 @@ public class ChessPiece {
 		return new ChessPiece(color, position, board);
 	}
 	
-	public static String saveToStream(ChessPiece piece) {
-		String ret = 	ChessUtils.makeAlgebraicPosition(piece.gridPosX, piece.gridPosY) 
-						+ "-" 
-						+ ChessUtils.makePieceName(piece.color, piece.type) 
-						+ "\n";
-		return ret;
+	
+	public void saveToStream(FileWriter file) throws Exception{
+		try {
+			String ret = 	ChessUtils.makeAlgebraicPosition(gridPosX, gridPosY) 
+					+ "-" 
+					+ ChessUtils.makePieceName(color, type) 
+					+ "\n";
+			file.write(ret);
+		} 
+		catch (Exception errorMsg) {
+			throw errorMsg;
+		}
 	}
 	
 	

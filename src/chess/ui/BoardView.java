@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import chess.ChessPiece;
+import chess.ChessBoard;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -43,7 +43,7 @@ public class BoardView {
 	
 	
 	// Constructeur : 
-	public BoardView(int x, int y) {
+	public BoardView(int x, int y, ChessBoard chessBoard) {
 		
 		startX = x;
 		startY = y;
@@ -73,7 +73,7 @@ public class BoardView {
 	}
 	
 	// Methode gridToPane :
-	public Point2D gridToPane(ChessPiece piece, int x, int y) {
+	public Point2D gridToPane(int x, int y) {
 
 		if (x < 0 || x > 7 || y < 0 || y > 7) {
 			throw new IllegalArgumentException("Piece out of grid: (" + x + "," + y + ")");
@@ -105,7 +105,7 @@ public class BoardView {
 		return new Point(xGridPos, yGridPos);
 	}
 	
-	// Getter du panel :
+	// Getter du pane :
 	public Pane getPane() {
 		return boardPane;
 	}

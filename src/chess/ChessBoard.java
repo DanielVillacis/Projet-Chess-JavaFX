@@ -9,6 +9,7 @@ import chess.ui.BoardView;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 
+
 //Représente la planche de jeu avec les pièces.
 
 
@@ -27,7 +28,7 @@ public class ChessBoard {
 	public ChessBoard(int x, int y) {
 		
 		// Creation d'une nouvelle board
-		boardView = new BoardView(x,y);
+		boardView = new BoardView(x,y, this);
 
 		// Initialise la grille avec des pièces vides.
 		grid = new ChessPiece[8][8];
@@ -48,7 +49,7 @@ public class ChessBoard {
 	// Place une pièce sur le planche de jeu.
 	public void putPiece(ChessPiece piece) {
 
-		Point2D pos = boardView.gridToPane(piece, piece.getGridX(), piece.getGridY());
+		Point2D pos = boardView.gridToPane(piece.getGridX(), piece.getGridY());
 		piece.getUI().relocate(pos.getX(), pos.getY());
 		getUI().getChildren().add(piece.getUI());
 		grid[piece.getGridX()][piece.getGridY()] = piece;
@@ -95,8 +96,9 @@ public class ChessBoard {
 		ChessPiece toMove = getPiece(gridPos);
 		
 		//Vérifie si les coordonnées sont valides
-		if (!isValid(newGridPos))
+		if (!isValid(newGridPos)) {
 			return false;
+		}
 		
 //		if(!toMove.verifyMove(gridPos, newGridPos)) {
 //			return false;
@@ -129,19 +131,12 @@ public class ChessBoard {
 	
 	
 	// Ajout de la methode ChessBoard.move :
-	public Point2D move(Point2D gridPos, Point2D newGridPos) {
+	public boolean move(Point2D gridPos, Point2D newGridPos) {
 
 		Point init = boardView.paneToGrid(gridPos.getX(), gridPos.getY());
 		Point end = boardView.paneToGrid(newGridPos.getX(), newGridPos.getY());
 
-		if (move(init, end)) {
-			Point2D newPos = boardView.gridToPane(grid[init.x][init.y], end.x, end.y);
-			return newPos;
-		} 
-		else {
-			Point2D oldPos = boardView.gridToPane(grid[init.x][init.y], init.x, init.y);
-			return oldPos;
-		}
+		return move(init, end);
 	}
 	
 	
@@ -156,30 +151,44 @@ public class ChessBoard {
 		ChessBoard initBoard = new ChessBoard(x,y);
 		Scanner scan = new Scanner(file);
 		
-		while (scan.hasNext()) {
-			ChessPiece piece = ChessPiece.readFromStream(scan.nextLine(), initBoard);
-			initBoard.putPiece(piece);
+		while (scan.hasNextLine()) {
+			initBoard.putPiece(ChessPiece.readFromStream(scan.nextLine(), initBoard));
+
 		}
 		scan.close();
 		return initBoard;
 	}
 	
 	
+	
 	// Implementation de la methode saveToFile()
 	public void saveToFile(File file) throws Exception {
-		FileWriter writeFile = new FileWriter(file);
+		FileWriter writeFile = new FileWriter(file.getAbsoluteFile());
 		
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				Point pos = new Point(i,j);
 				if(!isEmpty(pos)) {
-					writeFile.write(ChessPiece.saveToStream(grid[i][j]));
+					grid[i][j].saveToStream(writeFile);
 				}
 			}
 		}
 		writeFile.flush();
 		writeFile.close();
 	}
+	
+	
+	public Point paneToGrid(double x, double y) {
+		return boardView.paneToGrid(x, y);
+	}
+	
+	
+	public Point2D gridToPane(int x, int y) {
+		return boardView.gridToPane(x, y);
+	}
+	
+	
+	//
 	
 	
 	// Implementation de la methode equals() pour le ChessBoard

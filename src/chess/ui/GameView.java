@@ -1,15 +1,12 @@
 package chess.ui;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import chess.ChessPiece;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -41,7 +38,9 @@ public class GameView extends Application {
 	private Pane gamePane;
 	
 	//Creation d'un nouveau ChessGame.
-	private ChessGame chessGame = new ChessGame();
+	private ChessGame chessGame;
+	
+//	private ChessBoard board;
 	
 	
 	//Méthode de démarrage standard pour une application JavaFX. 
@@ -54,6 +53,8 @@ public class GameView extends Application {
 					
 		fileDialog = new FileChooser();
 		gamePane = new Pane();
+		chessGame = new ChessGame();
+		
 
 		//Charge la planche de jeu par d�faut
 		resetGame();
@@ -75,7 +76,7 @@ public class GameView extends Application {
 		recordButton.setOnAction(event -> {
 
 			File file = getSaveFile("Record moves...", "scripts/saves", stage);
-			saveScript(file);
+			chessGame.saveScript(file);
 		});
 
 		//Bouton utilisé pour sauvegarder la planche de jeu
@@ -87,7 +88,7 @@ public class GameView extends Application {
 		saveButton.setOnAction(event -> {
 
 			File file = getSaveFile("Save Board...", "boards/saves", stage);
-			saveBoard(file);
+			chessGame.saveBoard(file);
 		});
 
 		//Boîte de sélection utilisée pour activer l'intelligence artificielle
@@ -120,7 +121,7 @@ public class GameView extends Application {
 
 		playButton.setOnAction(event -> {
 			File file = getOpenFile("Open Script...", "scripts", stage);
-			loadScript(file);
+			chessGame.loadScript(file);
 		});
 
 		//Bouton undo, utilisé pour défaire le dernier mouvement
@@ -169,8 +170,8 @@ public class GameView extends Application {
 	}
 	
 	
-	//Retire la planche de jeu de la fenêtre
-	private void clearGame() {
+	//Retire la planche de jeu de la fenêtre (A VERIFIER!!!)
+	private void clearGame(ChessBoard board) {
 		if (chessGame.getBoard() != null) {
 			gamePane.getChildren().remove(chessGame.getBoard().getUI());
 		}
@@ -179,83 +180,30 @@ public class GameView extends Application {
 	
 	//Redémarre le jeu avec la planche de jeu par défaut. (A tenir en compte)
 	private void resetGame() {
+		clearGame(chessGame.getBoard());
 
-		clearGame();
-		chessGame.setBoard(new ChessBoard(boardPosX, boardPosY));
-		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>();
-//		pieces=ChessPiece.createInitialPieces(board);
-		for(ChessPiece piece: pieces){
-			chessGame.getBoard().putPiece(piece);
-		}
+		ChessBoard board = new ChessBoard(boardPosX, boardPosY);
+		File file = new File("boards/normalStart");
+		
+		chessGame.loadBoard(file,boardPosX,boardPosY);
 		gamePane.getChildren().add(chessGame.getBoard().getUI());
 		// Attention! Le board peut masquer les autres contrôles s'il n'est pas
 		// placé complètement derrière eux.
-		chessGame.getBoard().getUI().toBack();
+		board.getUI().toBack();	
 	}
 	
 	
 	//Redémarre le jeu avec une planche de jeu chargée d'un fichier
 	private void resetGame(File file) {
-
-		clearGame();
-			
+		clearGame(chessGame.getBoard());
+		
 		//Obtient la planche de jeu avec ses pièces à partir d'un fichier
-		loadBoard(file);
-
+		chessGame.loadBoard(file,boardPosX,boardPosY);
+		
 		gamePane.getChildren().add(chessGame.getBoard().getUI());
 		// Attention! Le board peut masquer les autres contrôles s'il n'est pas
 		// placé complètement derrière eux.
-		chessGame.getBoard().getUI().toBack();
-	}
-	
-	
-	//Charge une planche de jeu à partir d'un fichier.
-	public void loadBoard(File file) {
-		try {
-			chessGame.setBoard(ChessBoard.readFromFile(file, boardPosX, boardPosY));
-		} catch (Exception e) {
-			Alert alert = new Alert(AlertType.ERROR, "Error reading file", ButtonType.OK);
-			alert.showAndWait();
-			return;
-		}
-	}
-	
-	//Sauvegarde la planche de jeu actuelle dans un fichier.
-	public void saveBoard(File file) {
-
-		try {
-			chessGame.getBoard().saveToFile(file);
-		} catch (Exception e) {
-			Alert alert = new Alert(AlertType.ERROR, "Error writing file", ButtonType.OK);
-			alert.showAndWait();
-			return;
-		}
-	}
-	
-	
-	//Démarre l'enregistrement des mouvements du jeu dans un fichier de script.
-	public void saveScript(File file) {
-
-		try {
-			throw new Exception("Pas implanté!");
-		} catch (Exception e) {
-			Alert alert = new Alert(AlertType.ERROR, "Error writing file", ButtonType.OK);
-			alert.showAndWait();
-			return;
-		}
-	}
-	
-	
-	//Charge un fichier de script 
-	public void loadScript(File file) {
-
-		try {
-			throw new Exception("Pas implanté!");
-		} catch (Exception e) {
-			Alert alert = new Alert(AlertType.ERROR, "Error reading file", ButtonType.OK);
-			alert.showAndWait();
-			return;
-		}
+		chessGame.getBoard().getUI().toBack();	
 	}
 
 
