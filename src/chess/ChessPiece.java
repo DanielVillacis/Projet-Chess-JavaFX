@@ -153,22 +153,64 @@ public class ChessPiece {
 		
 		switch(type) {
 		
+		// Verification pour les pions :
 		case ChessUtils.TYPE_PAWN:
+			if(this.color == ChessUtils.BLACK) {
+				if(deltaX == 0 && deltaY == 1) {
+					return true;
+				}
+				else return false;
+			}
+			else if (this.color == ChessUtils.WHITE) {
+				if(deltaX == 0 && deltaY == -1) {
+					return true;
+				}
+				else return false;
+			}
 			
+		// Verification pour les chevaliers :
 		case ChessUtils.TYPE_KNIGHT:
+			if(((Math.abs(deltaY) == 1) && (Math.abs(deltaX) == 2)) || ((Math.abs(deltaY) == 2) && (Math.abs(deltaX) == 1))) {
+				return true;
+			}
+			else return false;
 			
+		// Verification pour les fous :
 		case ChessUtils.TYPE_BISHOP:
-			
+			if ((Math.abs(deltaY)) == (Math.abs(deltaX))) {
+				return true;
+			}
+			else return false;
+		
+		// Verification pour les tours :
 		case ChessUtils.TYPE_ROOK:
+			if(((Math.abs(deltaY) == 0) && (Math.abs(deltaX) > 0 && Math.abs(deltaX)<= 7)) 
+					|| ((Math.abs(deltaX) == 0) && ((Math.abs(deltaY) > 0) && (Math.abs(deltaY) <= 7)))) {
+				return true;
+			}
+			else return false;
 			
+		// Verification pour les reines :
 		case ChessUtils.TYPE_QUEEN:
+			if((Math.abs(deltaY) == Math.abs(deltaX)) 
+					|| (Math.abs(deltaY) == 0 && (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= 7)) 
+					|| (Math.abs(deltaX) == 0 && (Math.abs(deltaY) > 0 && Math.abs(deltaY) <= 7))) {
+				return true;
+			}
+			else return false;
 			
+		// Verification pour les rois :
 		case ChessUtils.TYPE_KING:
+			if((Math.abs(deltaX) == 1 && Math.abs(deltaY) == 0)   
+					|| (Math.abs(deltaX) == 0 && Math.abs(deltaY) == 1) 
+					|| (Math.abs(deltaX) == 1 && Math.abs(deltaY) == 1)) {
+				return true;
+			}
+			else return false;
 			
+		default :
+			return false;
 		}
-		
-		
-		return false;
 	}
 	
 	
