@@ -93,16 +93,10 @@ public class ChessBoard {
 	//Effectue un mouvement sur l'échiqier. Quelques règles de base sont implantées ici.
 	public boolean move(Point gridPos, Point newGridPos) {
 		
-		ChessPiece toMove = getPiece(gridPos);
-		
 		//Vérifie si les coordonnées sont valides
 		if (!isValid(newGridPos)) {
 			return false;
 		}
-		
-//		if(!toMove.verifyMove(gridPos, newGridPos)) {
-//			return false;
-//		}
 	
 
 		//Si la case destination est vide, on peut faire le mouvement
@@ -148,15 +142,15 @@ public class ChessBoard {
 	
 	// Implementation de la methode readFromFile()
 	public static ChessBoard readFromFile(File file, int x, int y) throws Exception {
-		ChessBoard initBoard = new ChessBoard(x,y);
+		ChessBoard chessBoard = new ChessBoard(x,y);
 		Scanner scan = new Scanner(file);
 		
 		while (scan.hasNextLine()) {
-			initBoard.putPiece(ChessPiece.readFromStream(scan.nextLine(), initBoard));
+			chessBoard.putPiece(ChessPiece.readFromStream(scan.nextLine(), chessBoard));
 
 		}
 		scan.close();
-		return initBoard;
+		return chessBoard;
 	}
 	
 	

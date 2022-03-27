@@ -53,7 +53,7 @@ public class ChessPiece {
 	}
 
 
-	// Crée la liste de pièces avec leur position de départ pour un jeu d'échecs standard
+	// Crée la liste de pièces avec leur position de départ pour un jeu d'échecs standard (Pas necessaire avec normalStart))
 	public static ArrayList<ChessPiece> createInitialPieces(ChessBoard board) {
 
 		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>();
