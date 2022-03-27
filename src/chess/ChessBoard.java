@@ -93,6 +93,12 @@ public class ChessBoard {
 	//Effectue un mouvement sur l'échiqier. Quelques règles de base sont implantées ici.
 	public boolean move(Point gridPos, Point newGridPos) {
 		
+		ChessPiece toMove = getPiece(gridPos);
+		
+		if (!toMove.verifyMove(gridPos, newGridPos)) {
+			return false;
+		}
+		
 		//Vérifie si les coordonnées sont valides
 		if (!isValid(newGridPos)) {
 			return false;
@@ -101,17 +107,15 @@ public class ChessBoard {
 
 		//Si la case destination est vide, on peut faire le mouvement
 		else if (isEmpty(newGridPos)) {
-			grid[newGridPos.x][newGridPos.y] = grid[gridPos.x][gridPos.y];
-			grid[gridPos.x][gridPos.y] = new ChessPiece(gridPos.x, gridPos.y, this);
+			assignSquare(newGridPos, toMove);
+			clearSquare(gridPos);
 			return true;
 		}
 
 		//Si elle est occuppé par une pièce de couleur différente, alors c'est une capture
 		else if (!isSameColor(gridPos, newGridPos)) {			
-			getUI().getChildren().remove(grid[newGridPos.x][newGridPos.y].getUI());
-			grid[newGridPos.x][newGridPos.y] = grid[gridPos.x][gridPos.y];
-			grid[gridPos.x][gridPos.y] = new ChessPiece(gridPos.x, gridPos.y, this);
-
+			removePiece(newGridPos);
+			assignSquare(newGridPos, toMove);
 			return true;
 		}
 
@@ -119,7 +123,24 @@ public class ChessBoard {
 	}
 	
 	
-	private ChessPiece getPiece(Point point) {
+	public void assignSquare(Point gridPos, ChessPiece piece) {
+		grid[gridPos.x][gridPos.y] = grid[piece.getGridX()][piece.getGridY()];;
+		grid[gridPos.x][gridPos.y].setGridPos(gridPos);
+	}
+	
+	
+	public void clearSquare(Point gridPos) {
+		grid[gridPos.x][gridPos.y]= new ChessPiece(gridPos.x, gridPos.y, this);
+	}
+	
+	
+	public void removePiece(Point point) {
+		getUI().getChildren().remove(grid[point.x][point.y].getUI());
+		clearSquare(point);
+	}
+	
+	
+	public ChessPiece getPiece(Point point) {
 		return grid[point.x][point.y];
 	}
 	
@@ -180,9 +201,6 @@ public class ChessBoard {
 	public Point2D gridToPane(int x, int y) {
 		return boardView.gridToPane(x, y);
 	}
-	
-	
-	//
 	
 	
 	// Implementation de la methode equals() pour le ChessBoard

@@ -145,6 +145,32 @@ public class ChessPiece {
 		}
 	}
 	
+	// Implementation de la methode chessPiece.verifyMove(gridPos, newGridPos).
+	public boolean verifyMove(Point gridPos, Point newGridPos) {
+		
+		int deltaX = newGridPos.x - gridPos.x;
+		int deltaY = newGridPos.y - gridPos.y;
+		
+		switch(type) {
+		
+		case ChessUtils.TYPE_PAWN:
+			
+		case ChessUtils.TYPE_KNIGHT:
+			
+		case ChessUtils.TYPE_BISHOP:
+			
+		case ChessUtils.TYPE_ROOK:
+			
+		case ChessUtils.TYPE_QUEEN:
+			
+		case ChessUtils.TYPE_KING:
+			
+		}
+		
+		
+		return false;
+	}
+	
 	
 	// Implementation de la methode equals() pour le ChessPiece.
 	@Override
