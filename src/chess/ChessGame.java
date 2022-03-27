@@ -35,7 +35,6 @@ public class ChessGame {
 	}
 	
 	
-	// NEW
 	public void loadBoard(File file, int x, int y) {
 		try {
 			board = ChessBoard.readFromFile(file, x, y);
@@ -48,7 +47,7 @@ public class ChessGame {
 		}
 	}
 	
-	//Charge une planche de jeu à partir d'un fichier.(NEW)
+	//Charge une planche de jeu à partir d'un fichier.
     public void loadBoard(String  path) {
        File file = new File(path);
       loadBoard(file, 0,0);

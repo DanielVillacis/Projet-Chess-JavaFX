@@ -38,8 +38,6 @@ public class GameView extends Application {
 	//Creation d'un nouveau ChessGame.
 	private ChessGame chessGame;
 	
-//	private ChessBoard board;
-	
 	
 	//Méthode de démarrage standard pour une application JavaFX. 
 	//L'initialisation de l'interface graphique se fait ici.
